@@ -481,9 +481,9 @@ Output: \code{index1=1, index2=2}
 方法3：先排序，然后左右夹逼，排序$O(n\log n)$，左右夹逼$O(n)$，最终$O(n\log n)$。但是注意，这题需要返回的是下标，而不是数字本身，因此这个方法行不通。
 
 
-\subsubsection{代码}
+\subsubsection{代码1}
 \begin{Code}
-//LeetCode, Two Sum
+// LeetCode, Two Sum
 // 方法2：hash。用一个哈希表，存储每个数对应的下标
 // 时间复杂度O(n)，空间复杂度O(n)
 class Solution {
@@ -504,6 +504,34 @@ public:
         }
         return result;
     }
+};
+\end{Code}
+
+
+\subsubsection{代码2}
+\begin{Code}
+// LeetCode, Two Sum
+// 方法2：hash。用一个哈希表，存储每个数对应的下标
+// 时间复杂度O(n)，空间复杂度O(n)
+class Solution {
+	public:
+	vector<int> twoSum(vector<int> &num, int target) {
+		unordered_map<int, int> mapping;
+		vector<int> result;
+		for (int i = 0; i < num.size(); i++) {
+			if (mapping.find(num[i]) == mapping.end()) mapping[num[i]] = i+1;
+			if (mapping.find(target-num[i]) != mapping.end()) {
+				int a=mapping[target-num[i]];
+				int b=i+1;
+				if(a!=b){
+					result.push_back(a);
+					result.push_back(b);
+					break;
+				}
+			}
+		}
+		return result;
+	}
 };
 \end{Code}
 
