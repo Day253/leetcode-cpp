@@ -514,24 +514,24 @@ public:
 // 方法2：hash。用一个哈希表，存储每个数对应的下标
 // 时间复杂度O(n)，空间复杂度O(n)
 class Solution {
-	public:
-	vector<int> twoSum(vector<int> &num, int target) {
-		unordered_map<int, int> mapping;
-		vector<int> result;
-		for (int i = 0; i < num.size(); i++) {
-			if (mapping.find(num[i]) == mapping.end()) mapping[num[i]] = i+1;
-			if (mapping.find(target-num[i]) != mapping.end()) {
-				int a=mapping[target-num[i]];
-				int b=i+1;
-				if(a!=b){
-					result.push_back(a);
-					result.push_back(b);
-					break;
-				}
-			}
-		}
-		return result;
-	}
+public:
+    vector<int> twoSum(vector<int> &num, int target) {
+        unordered_map<int, int> mapping;
+        vector<int> result;
+        for (int i = 0; i < num.size(); i++) {
+            if (mapping.find(num[i]) == mapping.end()) mapping[num[i]] = i+1;
+            if (mapping.find(target-num[i]) != mapping.end()) {
+                int a=mapping[target-num[i]];
+                int b=i+1;
+                if(a!=b){
+                    result.push_back(a);
+                    result.push_back(b);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
 };
 \end{Code}
 
