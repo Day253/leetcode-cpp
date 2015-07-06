@@ -572,7 +572,39 @@ A solution set is:
 这个方法可以推广到$k$-sum，先排序，然后做$k-2$次循环，在最内层循环左右夹逼，时间复杂度是 $O(\max\{n \log n, n^{k-1}\})$。
 
 
-\subsubsection{代码}
+\subsubsection{代码1}
+\begin{Code}
+// LeetCode, 3Sum
+// 先排序，然后左右夹逼，注意跳过重复的数，时间复杂度O(n^2)，空间复杂度O(1)
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int> &num) {
+        vector<vector<int>> result;
+        if (num.size() < 3) return result;
+        sort(num.begin(), num.end());
+        
+        for(int i = 0; i < num.size(); i++) {
+            int target = -num[i];
+            int front = i+1;
+            int back = num.size() - 1;
+            while(front < back){
+                int sum=num[front]+num[back];
+                // Finding answer which start from number num[i]
+                if(sum<target)
+                    front++;
+                else if(sum> target)
+                    back--;
+                                
+
+            }
+        }
+    return result;
+    }
+};
+\end{Code}
+
+
+\subsubsection{代码2}
 \begin{Code}
 // LeetCode, 3Sum
 // 先排序，然后左右夹逼，注意跳过重复的数，时间复杂度O(n^2)，空间复杂度O(1)
@@ -2074,6 +2106,54 @@ public:
 \myenddot
 
 
+\subsection{Reverse Linked List}
+\label{sec:reverse-linked-list}
+
+
+\subsubsection{描述}
+Reverse a singly linked list.
+
+Hint:
+
+A linked list can be reversed either iteratively or recursively. Could you implement both?
+
+
+\subsubsection{分析}
+无
+
+
+\subsubsection{代码}
+\begin{Code}
+// LeetCode, Reverse Linked List
+// 迭代版，时间复杂度O(n)，空间复杂度O(1)
+class Solution {
+    public:
+    ListNode *reverseList(ListNode *head) {
+        ListNode *pNode = head, *pPrev = NULL, *pTemp = NULL;
+        while(pNode)
+        {
+            ListNode *pNext = pNode->next;
+            if(pNext == NULL)
+            {
+                pTemp = pNode;
+            }    
+            pNode->next = pPrev;
+            pPrev = pNode;
+            pNode = pNext;
+        }
+        return pTemp;
+    }
+};
+\end{Code}
+
+
+\subsubsection{相关题目}
+
+\begindot
+\item 无
+\myenddot
+
+
 \subsection{Reverse Linked List II}
 \label{sec:reverse-linked-list-ii}
 
@@ -2425,8 +2505,9 @@ Note:
 
 
 \subsubsection{分析}
-设两个指针$p,q$，让$q$先走$n$步，然后$p$和$q$一起走，直到$q$走到尾节点，删除\fn{p->next}即可。
+设两个指针$slow,fast$，让$fast$先走$n$步，然后$fast$和$slow$一起走，直到$fast$走到尾节点，删除\fn{slow->next}即可。
 
+A tricky situation is that the $n^{th}$ node from end is just the head. In order to avoid checking this situation separately, I create a $dummy$ node. The code can then be cleare and concise. 
 
 \subsubsection{代码}
 \begin{Code}
@@ -2435,19 +2516,15 @@ Note:
 class Solution {
 public:
     ListNode *removeNthFromEnd(ListNode *head, int n) {
-        ListNode dummy{-1, head};
-        ListNode *p = &dummy, *q = &dummy;
-
-        for (int i = 0; i < n; i++)  // q先走n步
-            q = q->next;
-
-        while(q->next) { // 一起走
-            p = p->next;
-            q = q->next;
+        ListNode dummy(-1); dummy.next = head;
+        ListNode *slow = &dummy, *fast = &dummy;
+        // fast先走n步
+        while(n--) fast = fast->next;
+        // 一起走
+        while(fast->next) {
+            fast = fast->next; slow = slow->next;
         }
-        ListNode *tmp = p->next;
-        p->next = p->next->next;
-        delete tmp;
+        slow->next = slow->next->next;
         return dummy.next;
     }
 };
