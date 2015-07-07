@@ -2232,7 +2232,7 @@ The basic idea of this recursive solution is to reverse all the following nodes 
 \myenddot
 
 
-\subsection{Reverse Linked List II}
+\subsection{Reverse Linked List II (loj92)}
 \label{sec:reverse-linked-list-ii}
 
 
@@ -2311,6 +2311,7 @@ public:
                  if(i==n) break;
              }
         }
+        // 反转链表接到剩余链表上
         rhead->next->next=nxt;
         rhead->next=cur;
         return dummy->next;
