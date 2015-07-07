@@ -2557,12 +2557,12 @@ voidremove_if(node ** head, remove_fn rm)
 \end{Code}
 同上一段代码有何改进呢？我们看到：\textbf{不需要prev指针了，也不需要再去判断是否为链表头了，但是，curr变成了一个指向指针的指针。}这正是这段程序的精妙之处。
 \begindot
-\item \textbf{删除节点是表头}的情况，输入参数中传入$head$的二级指针，在$for$循环里将其初始化$curr$，然后$entry$就是\fn{*head(*curr)}，我们马上删除它，那么第8行就等效于\fn{*head = (*head)->next}，就是删除表头的实现。
+\item \textbf{删除节点是表头}的情况，输入参数中传入$head$的二级指针，在$for$循环里将其初始化$curr$，然后$entry$就是\fn{*head}(\fn{*curr})，我们马上删除它，那么第8行就等效于\fn{*head = (*head)->next}，就是删除表头的实现。
 \item \textbf{删除节点不是表头}的情况，对于上面的代码，我们可以看到：
     \begin{enumerate}
         \item 如果不删除当前结点，\fn{curr}保存的是当前结点\fn{next}指针的地址。
         \item entry 保存了 \fn{*curr}，这意味着在下一次循环：\fn{entry}就是\fn{prev->next}指针所指向的内存。
-        \item 删除结点：\fn{*curr = entry->next}; 于是：\fn{prev->next} 指向了 \fn{entry -> next};
+        \item 删除结点：\fn{*curr = entry->next}; 于是：\fn{prev->next} 指向了 \fn{entry->next};
     \end{enumerate}
 \myenddot
 是不是很巧妙？我们可以只用一个二级指针来操作链表，对所有节点都一样。
