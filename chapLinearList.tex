@@ -2252,7 +2252,6 @@ $1 \leq m \leq  n \leq $ length of list.
 \subsubsection{分析}
 这题非常繁琐，有很多边界检查，15分钟内做到bug free很有难度！
 
-
 \subsubsection{代码}
 \begin{Code}
 // LeetCode, Reverse Linked List II
@@ -2262,26 +2261,62 @@ public:
     ListNode *reverseBetween(ListNode *head, int m, int n) {
         ListNode dummy(-1);
         dummy.next = head;
-
         ListNode *prev = &dummy;
+        // 找到第m-1结点
         for (int i = 0; i < m-1; ++i)
             prev = prev->next;
+        // head2指向第m-1结点
         ListNode* const head2 = prev;
-
+        // prev指向第m结点
         prev = head2->next;
+        // cur指向第m+1结点，之后处理模式时将m+1插到m结点之前
         ListNode *cur = prev->next;
         for (int i = m; i < n; ++i) {
+            // 头插法
+            // 摘下cur结点，将prev连到nxt结点
             prev->next = cur->next;
+            // 将cur插到head2和prev之间
             cur->next = head2->next;
-            head2->next = cur;  // 头插法
+            head2->next = cur;
+            // 移动到下一个结点
             cur = prev->next;
         }
-
         return dummy.next;
     }
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+// LeetCode, Reverse Linked List II
+// 另一种迭代版，需要各种检查，时间复杂度O(n)，空间复杂度O(1)
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int m, int n) {
+        if(n==m) return head;
+        ListNode* dummy = new ListNode(0);
+        dummy->next=head;
+        
+        ListNode *pre=dummy, *cur, *nxt, *rhead, *rtail;
+        int i;
+        for(i=0, cur=dummy, nxt=cur->next;
+            cur;
+            i++, pre=cur, cur=nxt, nxt=cur->next)
+        {
+             if(i==m-1) rhead=cur;
+             if(i==n) rtail=cur;
+             if(m<i && i<=n)
+             {
+                 cur->next=pre;
+                 if(i==n) break;
+             }
+        }
+        rhead->next->next=nxt;
+        rhead->next=cur;
+        return dummy->next;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 
