@@ -481,7 +481,7 @@ Output: \code{index1=1, index2=2}
 方法3：先排序，然后左右夹逼，排序$O(n\log n)$，左右夹逼$O(n)$，最终$O(n\log n)$。但是注意，这题需要返回的是下标，而不是数字本身，因此这个方法行不通。
 
 
-\subsubsection{代码1}
+\subsubsection{代码}
 \begin{Code}
 // LeetCode, Two Sum
 // 方法2：hash。用一个哈希表，存储每个数对应的下标
@@ -508,10 +508,10 @@ public:
 \end{Code}
 
 
-\subsubsection{代码2}
+\subsubsection{代码}
 \begin{Code}
 // LeetCode, Two Sum
-// 方法2：hash。用一个哈希表，存储每个数对应的下标。faster 16ms
+// 方法2：hash。用一个哈希表，存储每个数对应的下标。faster: 16ms.
 // 时间复杂度O(n)，空间复杂度O(n)
 class Solution {
 public:
@@ -578,27 +578,37 @@ A solution set is:
 // 先排序，然后左右夹逼，注意跳过重复的数，时间复杂度O(n^2)，空间复杂度O(1)
 class Solution {
 public:
-    vector<vector<int>> threeSum(vector<int> &num) {
-        vector<vector<int>> result;
-        if (num.size() < 3) return result;
-        sort(num.begin(), num.end());
-        
-        for(int i = 0; i < num.size(); i++) {
+    vector<vector<int> > threeSum(vector<int> &num) {
+        vector<vector<int> > res;
+        std::sort(num.begin(), num.end());
+        for (int i = 0; i < num.size(); i++) {
             int target = -num[i];
-            int front = i+1;
+            int front = i + 1;
             int back = num.size() - 1;
-            while(front < back){
-                int sum=num[front]+num[back];
+            while (front < back) {
+                int sum = num[front] + num[back];
                 // Finding answer which start from number num[i]
-                if(sum<target)
+                if (sum < target)
                     front++;
-                else if(sum> target)
+                else if (sum > target)
                     back--;
-                                
-
+                else {
+                    res.push_back({num[i],num[front],num[back]});
+                    // Processing duplicates of Number 2
+                    // Rolling the front pointer to the next different number forwards
+                    front++;
+                    while (front < back && num[front] == num[front-1]) front++;
+                    // Processing duplicates of Number 3
+                    // Rolling the back pointer to the next different number backwards
+                    back--;
+                    while (front < back && num[back] == num[back+1]) back--;
+                }
             }
+            // Processing duplicates of Number 1
+            while (i + 1 < num.size() && num[i + 1] == num[i]) 
+                i++;
         }
-    return result;
+        return res;
     }
 };
 \end{Code}
@@ -2053,7 +2063,7 @@ struct ListNode {
 \end{Code}
 
 
-\subsection{Add Two Numbers}
+\subsection{Add Two Numbers (loj2)}
 \label{sec:add-two-numbers}
 
 
@@ -2106,7 +2116,7 @@ public:
 \myenddot
 
 
-\subsection{Reverse Linked List}
+\subsection{Reverse Linked List (loj206)}
 \label{sec:reverse-linked-list}
 
 
@@ -2146,6 +2156,74 @@ class Solution {
 };
 \end{Code}
 
+\subsubsection{分析}
+xWell, since the \fn{head} pointer may also be modified, we create a \fn{new_head} that points to it to facilitate the reverse process.
+
+For the example list \fn{1 -> 2 -> 3 -> 4 -> 5} in the problem statement, it will become \fn{0 -> 1 -> 2 -> 3 -> 4 -> 5} (we init \fn{new_head -> val} to be \fn{0}). Then we set a pointer\fn{pre} to \fn{new_head} and another \fn{cur} to \fn{head}. Then we keep inserting \fn{cur -> next} after \fn{pre} until \fn{cur} becomes the last node. The code is follows.
+
+\begin{Code}
+// LeetCode, Reverse Linked List
+// 添加头结点的迭代版，时间复杂度O(n)，空间复杂度O(1)
+class Solution {
+    public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* new_head = new ListNode(0);
+        new_head -> next = head;
+        ListNode* pre = new_head;
+        ListNode* cur = head; 
+        while (cur && cur -> next) {
+            ListNode* temp = pre -> next;
+            pre -> next = cur -> next;
+            cur -> next = cur -> next -> next; 
+            pre -> next -> next = temp;
+        }
+        return new_head -> next;
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+
+A more concise solution without using the \fn{new_head}. The idea is to reverse one node at a time for the beginning of the list. The rewritten code is as follows.
+
+\begin{Code}
+// LeetCode, Reverse Linked List
+// 添加头结点的迭代版，此处修改head指针，时间复杂度O(n)，空间复杂度O(1)
+class Solution {
+    public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* pre = NULL;
+        while (head) {
+            ListNode* next = head -> next;
+            head -> next = pre;
+            pre = head;
+            head = next;
+        } 
+        return pre;
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+
+Well, both of the above solutions are iterative. The hint has also suggested us to use recursion. In fact, the above link has a nice recursive solution, whose rewritten code is as follows.
+
+\begin{Code}
+// LeetCode, Reverse Linked List
+// 递归版本，此处修改head指针，时间复杂度O(n)，空间复杂度O(1)
+class Solution {
+    public:   
+    ListNode* reverseList(ListNode* head) {
+        if (!head || !(head -> next)) return head;
+        ListNode* node = reverseList(head -> next);
+        head -> next -> next = head;
+        head -> next = NULL;
+        return node; 
+    }
+}; 
+\end{Code}
+
+The basic idea of this recursive solution is to reverse all the following nodes after \fn{head}. Then we need to set \fn{head} to be the final node in the reversed list. We simply set its next node in the original list (\fn{head -> next}) to point to it and sets its \fn{next} to be \fn{NULL}. 
 
 \subsubsection{相关题目}
 
@@ -2628,7 +2706,7 @@ class Solution {
     ListNode *removeNthFromEnd(ListNode *head, int n) {
         ListNode *slow = head, *fast = head;
         while(n--) fast = fast->next;
-        // 单独处理刚好删除头结点情况
+        // 单独处理删除头结点情况
         if(!fast) return head->next;
         while(fast->next) {
             fast = fast->next; slow = slow->next;
