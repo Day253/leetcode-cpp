@@ -2524,9 +2524,9 @@ node * remove_if(node * head, remove_fn rm)
         node * const next = curr->next;
         if (rm(curr))  {
             if (prev)
-            prev->next = next;
+                prev->next = next;
             else
-            head = next;
+                head = next;
             free(curr);
         }
         else
