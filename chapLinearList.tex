@@ -2326,9 +2326,8 @@ public:
 \myenddot
 
 
-\subsection{Partition List}
+\subsection{Partition List (loj86)}
 \label{sec:partition-list}
-
 
 \subsubsection{描述}
 Given a linked list and a value $x$, partition it such that all nodes less than $x$ come before nodes greater than or equal to $x$.
@@ -2340,8 +2339,7 @@ Given \code{1->4->3->2->5->2} and \code{x = 3}, return \code{1->2->2->4->3->5}.
 
 
 \subsubsection{分析}
-无
-
+使用两个带头链表按顺序收集结点，然后将两个链表连在一起。
 
 \subsubsection{代码}
 \begin{Code}
@@ -2382,7 +2380,7 @@ public:
 \myenddot
 
 
-\subsection{Remove Duplicates from Sorted List}
+\subsection{Remove Duplicates from Sorted List (loj83)}
 \label{sec:remove-duplicates-from-sorted-list}
 
 
@@ -2684,7 +2682,7 @@ voidremove_if(node ** head, remove_fn rm)
 如果你对上面的代码和描述理解上有困难的话，你可以看看下图的示意：
 
 \begin{center}
-    \includegraphics[width=0.7\textwidth]{two-star-programming.png}\\
+    \includegraphics[width=0.6\textwidth]{two-star-programming.png}\\
     \figcaption{Two star programming}\label{fig:two-star-programming}
 \end{center}
 
@@ -2767,6 +2765,7 @@ class Solution {
             fast = fast->next;
         }
         *slow = (*slow)->next;
+        // 注意这里返回的是head
         return head;
     }
 };
@@ -2779,7 +2778,7 @@ class Solution {
 \myenddot
 
 
-\subsection{Swap Nodes in Pairs}
+\subsection{Swap Nodes in Pairs (loj24)}
 \label{sec:swap-nodes-in-pairs}
 
 
