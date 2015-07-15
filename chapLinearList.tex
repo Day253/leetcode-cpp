@@ -2611,16 +2611,16 @@ We can't really delete the node, but we can achieve the same effect by instead r
 \subsubsection{代码}
 \begin{Code}
 void deleteNode(ListNode* node) {
-	*node = *node->next;
+    *node = *node->next;
 }
 \end{Code}
 But better properly delete the next node:
 \subsubsection{代码}
 \begin{Code}
 void deleteNode(ListNode* node) {
-	auto next = node->next;
-	*node = *next;
-	delete next;
+    auto next = node->next;
+    *node = *next;
+    delete next;
 }
 \end{Code}
 
@@ -2649,34 +2649,34 @@ Return: \code{1 --> 2 --> 3 --> 4 --> 5}
 \begin{Code}
 class Solution {
 public:
-	ListNode* removeElements(ListNode* head, int val) {
-		if (!head) return NULL;
-		head->next = removeElements(head->next, val);
-		return head->val == val ? head->next : head;
-	}
+    ListNode* removeElements(ListNode* head, int val) {
+        if (!head) return NULL;
+        head->next = removeElements(head->next, val);
+        return head->val == val ? head->next : head;
+    }
 };
 \end{Code}
 
-the trick is using reference (ListNode* &L)
+the trick is using reference (\code{ListNode* \&L})
 \subsubsection{代码}
 \begin{Code}
 class Solution {
 public:
-	void del_x(ListNode *&L, int x) {
-		if(!L) return;
-		if(L->val == x) {
-			ListNode *p=L;
-			L=L->next;
-			delete p;
-			del_x(L,x);
-		} else {
-			del_x(L->next,x);
-		}
-	}
-	ListNode* removeElements(ListNode* head, int val) {
-		del_x(head,val);
-		return head;
-	}
+    void del_x(ListNode *&L, int x) {
+        if(!L) return;
+        if(L->val == x) {
+            ListNode *p=L;
+            L=L->next;
+            delete p;
+            del_x(L,x);
+        } else {
+            del_x(L->next,x);
+        }
+    }
+    ListNode* removeElements(ListNode* head, int val) {
+        del_x(head,val);
+        return head;
+    }
 };
 \end{Code}
 
@@ -2684,24 +2684,24 @@ public:
 \begin{Code}
 class Solution {
 public:
-	ListNode *removeElements(ListNode *head, int val) {
-		ListNode *newHead = head, *curr = head;
-		while(curr) {
-			if(newHead->val == val) {
-				curr = newHead->next;
-				newHead = newHead->next;
-				continue;
-			}
-			if(curr->next != NULL) {
-				if(curr->next->val == val) {
-					curr->next = curr->next->next;
-					continue;
-				}
-			}
-			curr = curr->next;
-		}
-		return newHead;
-	}
+    ListNode *removeElements(ListNode *head, int val) {
+        ListNode *newHead = head, *curr = head;
+        while(curr) {
+            if(newHead->val == val) {
+                curr = newHead->next;
+                newHead = newHead->next;
+                continue;
+            }
+            if(curr->next != NULL) {
+                if(curr->next->val == val) {
+                    curr->next = curr->next->next;
+                    continue;
+                }
+            }
+            curr = curr->next;
+        }
+        return newHead;
+    }
 };
 \end{Code}
 
@@ -2710,23 +2710,25 @@ Another code that can pass all the test with one more variable.
 \begin{Code}
 class Solution {
 public:
-	ListNode* removeElements(ListNode* head, int val) {
-		ListNode *cur=head,*newHead=head,*prev=head;
-		while(cur){
-			// 单独处理删除头结点（可能删除多次头结点）
-			if(newHead->val == val)
-			{
-				prev = newHead->next;
-				cur = newHead->next;
-				newHead = newHead->next;
-				continue;
-			}
-			if(cur->val == val) prev->next=cur->next;
-			else prev=cur;
-			cur=cur->next;
-		}
-		return newHead;
-	}
+    ListNode *removeElements(ListNode *head, int val) {
+        ListNode *cur = head, *newHead = head, *prev = head;
+        while(cur) {
+            // 单独处理删除头结点（可能删除多次头结点）
+            if(newHead->val == val) {
+                prev = newHead->next;
+                cur = newHead->next;
+                newHead = newHead->next;
+                continue;
+            }
+            if(cur->val == val) {
+                prev->next = cur->next;
+            } else {
+                prev = cur;
+            }
+            cur = cur->next;
+        }
+        return newHead;
+    }
 };
 \end{Code}
 
@@ -3140,7 +3142,7 @@ public:
 \myenddot
 
 
-\subsection{Linked List Cycle}
+\subsection{Linked List Cycle (loj141)}
 \label{sec:Linked-List-Cycle}
 
 
@@ -3183,11 +3185,12 @@ public:
 \myenddot
 
 
-\subsection{Linked List Cycle II}
+\subsection{Linked List Cycle II (loj142)}
 \label{sec:Linked-List-Cycle-II}
 
 
 \subsubsection{描述}
+
 Given a linked list, return the node where the cycle begins. If there is no cycle, return \fn{null}.
 
 Follow up:
@@ -3236,12 +3239,205 @@ public:
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        if (head == NULL || head->next == NULL) return NULL;
+    
+        ListNode* firstp = head;
+        ListNode* secondp = head;
+        bool isCycle = false;
+    
+        while(firstp != NULL && secondp != NULL) {
+            firstp = firstp->next;
+            if (secondp->next == NULL) return NULL;
+            secondp = secondp->next->next;
+            if (firstp == secondp) { isCycle = true; break; }
+        }
+    
+        if(!isCycle) return NULL;
+        firstp = head;
+        while( firstp != secondp) {
+            firstp = firstp->next;
+            secondp = secondp->next;
+        }
+    
+        return firstp;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot
 \item Linked List Cycle, 见 \S \ref{sec:Linked-List-Cycle}
 \myenddot
 
+\subsection{Intersection of Two Linked Lists (loj160)}
+\label{sec:intersection-of-two-linked-lists}
+
+\subsubsection{描述}
+
+Write a program to find the node at which the intersection of two singly linked lists begins.
+
+For example, the following two linked lists:
+
+\begin{Code}
+A:          a1 → a2
+                   ↘
+                     c1 → c2 → c3
+                   ↗            
+B:     b1 → b2 → b3
+\end{Code}
+
+begin to intersect at node c1.
+
+\textbf{Notes:}
+\begindot
+\item If the two linked lists have no intersection at all, return \code{null}.
+\item The linked lists must retain their original structure after the function returns.
+\item You may assume there are no cycles anywhere in the entire linked structure.
+\item Your code should preferably run in O(n) time and use only O(1) memory.
+\myenddot
+
+\subsubsection{分析}
+There are many solutions to this problem:
+
+\begindot
+\item Brute-force solution (O(mn) running time, O(1) memory):
+\item Hashset solution (O(n+m) running time, O(n) or O(m) memory):
+\item Two pointer solution (O(n+m) running time, O(1) memory):
+\myenddot
+
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+    {
+        ListNode *p1 = headA;
+        ListNode *p2 = headB;
+    
+        if (p1 == NULL || p2 == NULL) {
+            return NULL;
+        }
+    
+        while (p1 != NULL && p2 != NULL && p1 != p2) {
+            p1 = p1->next;
+            p2 = p2->next;
+    
+            //
+            // Any time they collide or reach end together without colliding
+            // then return any one of the pointers.
+            //
+            if (p1 == p2) {
+                return p1;
+            }
+    
+            //
+            // If one of them reaches the end earlier then reuse it
+            // by moving it to the beginning of other list.
+            // Once both of them go through reassigning,
+            // they will be equidistant from the collision point.
+            //
+            if (p1 == NULL) {
+                p1 = headB;
+            }
+            if (p2 == NULL) {
+                p2 = headA;
+            }
+        }
+    
+        return p1;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    // get the len of a linked list
+    int getLen(ListNode *head)
+    {
+        int len = 0;
+        while(head) {
+            len++;
+            head = head->next;
+        }
+        return len;
+    }
+    
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB)
+    {
+        if (!headA || !headB) {
+            return NULL;
+        }
+        ListNode *p1 = headA, *p2 = headB;
+        int lenA = getLen(headA), lenB = getLen(headB);
+    
+        if (lenA <= lenB) {
+            for (int i = 0; i < lenB - lenA; ++i) {
+                p2 = p2->next;
+            }
+        } else {
+            for (int i = 0; i < lenA - lenB; ++i) {
+                p1 = p1->next;
+            }
+        }
+    
+        while (p1 && p2 && p1 != p2) {
+            p1 = p1->next, p2 = p2->next;
+        }
+        if (!p1 || !p2) {
+            return NULL;
+        }
+        return p1;
+    }
+};
+\end{Code}
+
+The idea is to first fast forward each pointer to the end to find their distances from the end. Then we can fast forward the farther pointer so they're the same distance from the end. Finally we can fast forward both at the same time until they coincide.
+
+This same exact approach can also be used to find the least common ancestor (LCA) of two nodes in a tree where nodes have parent pointers.
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+
+        auto currA = headA, currB = headB;
+        int countA = 0, countB = 0;
+
+        while (currA) {
+            currA = currA->next, countA++;
+        }
+        while (currB) {
+            currB = currB->next, countB++;
+        }
+        int diff = std::abs(countA - countB);
+        if (countB > countA) {
+            swap(headA, headB);
+        }
+        while (diff--) {
+            headA = headA->next;
+        }
+        while (headA != headB) {
+            headA = headA->next, headB = headB->next;
+        }
+        return headA;
+    }
+};
+\end{Code}
+
+\subsubsection{相关题目}
+
+\begindot
+\item 无
+\myenddot
 
 \subsection{Reorder List}
 \label{sec:Reorder-List}
