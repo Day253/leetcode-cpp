@@ -2597,6 +2597,144 @@ public:
 \item 无
 \myenddot
 
+\subsection{Delete Node in a Linked List (loj237)}
+\label{sec:delete-node-in-a-linked-list}
+
+\subsubsection{描述}
+Write a function to delete a node (except the tail) in a singly linked list, given only access to that node.
+
+Supposed the linked list is \code{1 -> 2 -> 3 -> 4} and you are given the third node with value \code{3}, the linked list should become \code{1 -> 2 -> 4} after calling your function.
+
+\subsubsection{分析}
+We can't really delete the node, but we can achieve the same effect by instead removing the next node after copying its data into the node that we were asked to delete.
+
+\subsubsection{代码}
+\begin{Code}
+void deleteNode(ListNode* node) {
+	*node = *node->next;
+}
+\end{Code}
+But better properly delete the next node:
+\subsubsection{代码}
+\begin{Code}
+void deleteNode(ListNode* node) {
+	auto next = node->next;
+	*node = *next;
+	delete next;
+}
+\end{Code}
+
+\subsubsection{相关题目}
+
+\begindot
+\item 无
+\myenddot
+
+\subsection{Remove Linked List Elements (loj203)}
+\label{sec:remove-linked-list-elements}
+
+\subsubsection{描述}
+Remove all elements from a linked list of integers that have value \code{val}.
+
+Example:
+
+Given: \code{1 --> 2 --> 6 --> 3 --> 4 --> 5 --> 6}, \code{val = 6}
+
+Return: \code{1 --> 2 --> 3 --> 4 --> 5}
+
+\subsubsection{分析}
+3 line recursive solution
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+	ListNode* removeElements(ListNode* head, int val) {
+		if (!head) return NULL;
+		head->next = removeElements(head->next, val);
+		return head->val == val ? head->next : head;
+	}
+};
+\end{Code}
+
+the trick is using reference (ListNode* &L)
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+	void del_x(ListNode *&L, int x) {
+		if(!L) return;
+		if(L->val == x) {
+			ListNode *p=L;
+			L=L->next;
+			delete p;
+			del_x(L,x);
+		} else {
+			del_x(L->next,x);
+		}
+	}
+	ListNode* removeElements(ListNode* head, int val) {
+		del_x(head,val);
+		return head;
+	}
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+	ListNode *removeElements(ListNode *head, int val) {
+		ListNode *newHead = head, *curr = head;
+		while(curr) {
+			if(newHead->val == val) {
+				curr = newHead->next;
+				newHead = newHead->next;
+				continue;
+			}
+			if(curr->next != NULL) {
+				if(curr->next->val == val) {
+					curr->next = curr->next->next;
+					continue;
+				}
+			}
+			curr = curr->next;
+		}
+		return newHead;
+	}
+};
+\end{Code}
+
+Another code that can pass all the test with one more variable.
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+	ListNode* removeElements(ListNode* head, int val) {
+		ListNode *cur=head,*newHead=head,*prev=head;
+		while(cur){
+			// 单独处理删除头结点（可能删除多次头结点）
+			if(newHead->val == val)
+			{
+				prev = newHead->next;
+				cur = newHead->next;
+				newHead = newHead->next;
+				continue;
+			}
+			if(cur->val == val) prev->next=cur->next;
+			else prev=cur;
+			cur=cur->next;
+		}
+		return newHead;
+	}
+};
+\end{Code}
+
+\subsubsection{相关题目}
+
+\begindot
+\item 无
+\myenddot
 
 \subsection{Remove Nth Node From End of List (loj19)}
 \label{sec:remove-nth-node-from-end-of-list}
