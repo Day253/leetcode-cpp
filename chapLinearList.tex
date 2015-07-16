@@ -2917,6 +2917,62 @@ class Solution {
 \item 无
 \myenddot
 
+\subsection{Palindrome Linked List (loj234)}
+\label{sec:palindrome-linked-list}
+
+\subsubsection{描述}
+Given a singly linked list, determine if it is a palindrome.
+
+\textbf{Follow up:}
+Could you do it in O(n) time and O(1) space?
+
+\subsubsection{分析}
+
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    bool isPalindrome(ListNode *head) {
+        if(head == NULL || head->next == NULL) {
+            return true;
+        }
+        ListNode *slow = head;
+        ListNode *fast = head;
+        while(fast->next != NULL && fast->next->next != NULL) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        slow->next = reverseList(slow->next);
+        slow = slow->next;
+        while(slow != NULL) {
+            if(head->val != slow->val) {
+                return false;
+            }
+            head = head->next;
+            slow = slow->next;
+        }
+        return true;
+    }
+    ListNode *reverseList(ListNode *head) {
+        ListNode *pre = NULL;
+        ListNode *next = NULL;
+        while(head != NULL) {
+            next = head->next;
+            head->next = pre;
+            pre = head;
+            head = next;
+        }
+        return pre;
+    }
+};
+\end{Code}
+
+\subsubsection{相关题目}
+
+\begindot
+\item 无
+\myenddot
 
 \subsection{Swap Nodes in Pairs (loj24)}
 \label{sec:swap-nodes-in-pairs}
