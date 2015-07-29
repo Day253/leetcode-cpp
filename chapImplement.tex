@@ -105,7 +105,8 @@ public:
 class Solution {
 public:
     int reverse(int x) {
-        if(x==INT_MIN)//solve this situation, we can use x=abs(x)
+        if(x==INT_MIN)
+        //solve this situation, we can use x=abs(x)
             return 0;
         int isPositive=1;
         if(x<0)
@@ -117,7 +118,9 @@ public:
         int int_maxp=INT_MAX/10;
         while(x!=0)
         {
-            if (result>int_maxp)//don't need to check "result==int_maxp&&q>int_maxq"，because this can't happen (x is type int)
+            if (result>int_maxp)
+            // don't need to check "result == int_maxp && q > int_maxq"
+            // because this can't happen (x is type int)
             {
                 result=0;
                 break;
