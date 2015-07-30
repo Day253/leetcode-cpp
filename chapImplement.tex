@@ -1383,14 +1383,14 @@ n is now zero, so the while loop ends, and the final count (the numbers of set b
 \begin{Code}
 class Solution {
 public:
-	int hammingWeight(uint32_t n) {
-		int count = 0;
-		while (n) {
-			n &= (n - 1);
-			count++;
-		}
-		return count;
-	}
+    int hammingWeight(uint32_t n) {
+        int count = 0;
+        while (n) {
+            n &= (n - 1);
+            count++;
+        }
+        return count;
+    }
 };
 \end{Code}
 
