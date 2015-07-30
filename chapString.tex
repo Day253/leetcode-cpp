@@ -1137,6 +1137,15 @@ return 5.
 // 时间复杂度O(n)，空间复杂度O(1)
 class Solution {
 public:
+    int lengthOfLastWord(string s) {
+        auto first = find_if(s.rbegin(), s.rend(), ::isalpha);
+        auto last = find_if_not(first, s.rend(), ::isalpha);
+        return distance(first, last);
+    }
+};
+// 构造string小技巧
+class Solution {
+public:
     int lengthOfLastWord(const char *s) {
         const string str(s);
         auto first = find_if(str.rbegin(), str.rend(), ::isalpha);
@@ -1167,6 +1176,44 @@ public:
 };
 \end{Code}
 
+\subsubsection{顺序扫描}
+\begin{Code}
+class Solution {
+public:
+    int lengthOfLastWord(const string &s) {
+        int len = 0;
+        int i = 0;
+        while (i < s.size()) {
+            if (s[i++] != ' ') {
+                ++len;
+            } else if (i < s.size() and s[i] != ' ') {
+                len = 0;
+            }
+        }
+        return len;
+    }
+};
+\end{Code}
+
+\subsubsection{顺序扫描}
+\begin{Code}
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        int sum = 0, i = s.length() - 1;
+        for(; i >= 0; i--) {
+            if(sum > 0 && s[i] == ' ') {
+                return sum;
+            }
+            if(s[i] == ' ') {
+                continue;
+            }
+            sum++;
+        }
+        return sum;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot
