@@ -1518,7 +1518,7 @@ public:
 \myenddot
 
 
-\subsection{Plus One} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Plus One (loj66)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:plus-one}
 
 
@@ -1583,6 +1583,29 @@ private:
 };
 \end{Code}
 
+\subsubsection{分析}
+非常精妙的解法，如果在非9进位，直接返回，在9处返回，一定是从末位进位上去的，因此直接在尾部加一个0，把首位改成1；
+
+\subsubsection{代码new}
+\begin{Code}
+class Solution {
+public:
+    vector<int> plusOne(vector<int> &digits) {
+        int n = digits.size();
+        for (int i = n - 1; i >= 0; --i) {
+            if (digits[i] == 9) {
+                digits[i] = 0;
+            } else {
+                digits[i]++;
+                return digits;
+            }
+        }
+        digits[0] = 1;
+        digits.push_back(0);
+        return digits;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot

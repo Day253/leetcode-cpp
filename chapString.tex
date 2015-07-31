@@ -1125,6 +1125,77 @@ public:
 };
 \end{Code}
 
+\subsubsection{分析}
+Please see the comments in the code. The solution is quite straight-forward. We generate k-th string, and from k-th string we generate k+1-th string, until we generate n-th string. We use string-helper to save temporary result, I'm sure there is a way for in-place solution also.
+
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    std::string countAndSay(int n) {
+        if (0 == n) return "";
+        if (1 == n) return "1";
+        std::string res = "1";
+        std::string s;
+        
+        // run from starting to generate second string
+        for (int i = 1; i < n; i++) {
+            int len = res.size();
+            
+            //cheack all digits in the string
+            for (int j = 0; j < len; j++) {
+            
+                // we have at least 1 occourence of each digit
+                int count = 1;
+                
+                // get the number of times same digit occurred
+                // (be carefull with the end of the string)
+                while ((j + 1 < len) && (res[j] == res[j + 1])) {
+                    count++;
+                    
+                    // we need to keep increasing the index inside of the string
+                    j++;
+                }
+                
+                // add to new string "count"+"digit itself"
+                s += std::to_string(count) + res[j];
+            }
+            
+            // save temporary result
+            res = s;
+            
+            // clean our string-helper
+            s.clear();
+        }
+        return res;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+    string countAndSay(int n) {
+        if (n == 0) return "";
+        string res = "1";
+        while (--n) {
+            string cur = "";
+            for (int i = 0; i < res.size(); i++) {
+                int count = 1;
+                while ((i + 1 < res.size()) && (res[i] == res[i + 1])) {
+                    count++;
+                    i++;
+                }
+                cur += to_string(count) + res[i];
+            }
+            res = cur;
+        }
+        return res;
+    }
+};
+\end{Code}
+
 
 \subsubsection{相关题目}
 \begindot

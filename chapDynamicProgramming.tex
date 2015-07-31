@@ -1219,3 +1219,105 @@ private:
 \begindot
 \item Word Break, 见 \S \ref{sec:word-break}
 \myenddot
+
+
+\section{Climbing Stairs (loj70)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\label{sec:climbing-stairs}
+
+\subsubsection{描述}
+You are climbing a stair case. It takes n steps to reach to the top.
+
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+\subsubsection{分析}
+
+The problem seems to be a dynamic programming one. Hint: the tag also suggests that! Here are the steps to get the solution incrementally.
+
+\begindot
+\item Base cases: if n <= 0, then the number of ways should be zero. if n == 1, then there is only way to climb the stair. if n == 2, then there are two ways to climb the stairs. One solution is one step by another; the other one is two steps at one time.
+
+\item The key intuition to solve the problem is that given a number of stairs n, if we know the number ways to get to the points \fn{[n-1]} and \fn{[n-2]} respectively, denoted as \fn{n1} and \fn{n2} , then the total ways to get to the point \fn{[n]} is \fn{n1 + n2}. Because from the \fn{[n-1]} point, we can take one single step to reach \fn{[n]}. And from the \fn{[n-2]} point, we could take two steps to get there. There is NO overlapping between these two solution sets, because we differ in the final step.
+\myenddot
+Now given the above intuition, one can construct an array where each node stores the solution for each number n. Or if we look at it closer, it is clear that this is basically a fibonacci number, with the starting numbers as 1 and 2, instead of 1 and 1.
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int climbStairs(int n) {
+        // base cases
+        if(n <= 0) return 0;
+        if(n == 1) return 1;
+        if(n == 2) return 2;
+        int one_step_before = 1;
+        int two_steps_before = 2;
+        int all_ways = 0;
+        for(int i = 2; i < n; i++) {
+            all_ways = one_step_before + two_steps_before;
+            one_step_before = two_steps_before;
+            two_steps_before = all_ways;
+        }
+        return all_ways;
+    }
+};
+\end{Code}
+
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int climbStairs(int n) {
+        if(n == 0 || n == 1 || n == 2) {
+            return n;
+        }
+        int mem[n];
+        mem[0] = 1;
+        mem[1] = 2;
+        for(int i = 2; i < n; i++) {
+            mem[i] = mem[i - 1] + mem[i - 2];
+        }
+        return mem[n - 1];
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int climbStairs(int n) {
+        int StepOne = 1;
+        int StepTwo = 0;
+        int ret = 0;
+        for(int i = 0; i < n; i++) {
+            ret = StepOne + StepTwo;
+            StepTwo = StepOne;
+            StepOne = ret;
+        }
+        return ret;
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+Same simple algorithm written in every offered language. Variable \fn{a} tells you the number of ways to reach the current step, and \fn{b} tells you the number of ways to reach the next step. So for the situation one step further up, the old \fn{b} becomes the new \fn{a}, and the new \fn{b} is the old \fn{a+b}, since that new step can be reached by climbing 1 step from what \fn{b} represented or 2 steps from what \fn{a} represented.
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int climbStairs(int n) {
+        int a = 1, b = 1;
+        while (n--)
+            a = (b += a) - a;
+        return a;
+    }
+};
+\end{Code}
+
+\subsubsection{相关题目}
+
+\begindot
+\item 无
+\myenddot
