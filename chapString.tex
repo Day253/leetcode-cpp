@@ -171,7 +171,7 @@ private:
 \myenddot
 
 
-\section{String to Integer (atoi)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{String to Integer (atoi) (loj8)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:string-to-integer}
 
 
@@ -200,6 +200,16 @@ If no valid conversion could be performed, a zero value is returned. If the corr
 \item 溢出数据，"2147483648"
 \end{enumerate}
 
+To deal with overflow, inspect the current number before multiplication. If the current number is greater than 214748364, we know it is going to overflow. On the other hand, if the current number is equal to 214748364, we know that it will overflow only when the current digit is greater than or equal to 8.
+
+溢出判断方法：
+
+\fn{num > INT_MAX / 10 || (num == INT_MAX / 10 && (str[i] - '0') > INT_MAX % 10}
+
+或者 
+
+\fn{num > INT_MAX / 10 || num * 10 > INT_MAX - (str[i] - '0')}
+
 \subsubsection{代码}
 \begin{Code}
 // LeetCode, String to Integer (atoi)
@@ -211,27 +221,65 @@ public:
         int sign = 1;
         const int n = strlen(str);
         int i = 0;
-
-        while (str[i] == ' ' && i < n) i++;
-
+        while (str[i] == ' ' && i < n) {
+            i++;
+        }
         if (str[i] == '+') {
             i++;
         } else if (str[i] == '-') {
             sign = -1;
             i++;
         }
-
         for (; i < n; i++) {
-            if (str[i] < '0' || str[i] > '9')
+            if (str[i] < '0' || str[i] > '9') {
                 break;
+            }
             if (num > INT_MAX / 10 ||
-                            (num == INT_MAX / 10 &&
-                                    (str[i] - '0') > INT_MAX % 10)) {
+                    (num == INT_MAX / 10 &&
+                     (str[i] - '0') > INT_MAX % 10)) {
                 return sign == -1 ? INT_MIN : INT_MAX;
             }
             num = num * 10 + str[i] - '0';
         }
         return num * sign;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int myAtoi(string str) {
+        int ret = 0, j = 0;
+        bool neg = false;
+        while(str[j] == ' ') {
+            ++j;    // skip whitespace
+        }
+        if(str[j] == '+' || str[j] == '-') {
+            switch (str[j]) {
+            case '-':
+                neg = true;
+            }
+            j++;
+        }
+        for(int i = j; i < str.size(); i++) {
+            if(str[i] < '0' || str[i] > '9') {
+                break;
+            }
+            int digit = (str[i] - '0');
+            if(ret > INT_MAX / 10 || ret * 10 > INT_MAX - digit) {
+                if(neg) {
+                    return INT_MIN;
+                }
+                return INT_MAX;
+            }
+            ret = ret * 10 + digit;
+        }
+        if(neg) {
+            return -ret;
+        }
+        return ret;
     }
 };
 \end{Code}
@@ -656,7 +704,7 @@ public:
 \myenddot
 
 
-\section{Longest Common Prefix} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Longest Common Prefix (loj14)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:longest-common-prefix}
 
 
@@ -712,6 +760,24 @@ public:
 };
 \end{Code}
 
+\subsubsection{横向扫描}
+\begin{Code}
+class Solution {
+public:
+    string longestCommonPrefix(vector<string> &strs) {
+        if (strs.empty()) {
+            return "";
+        }
+        int prefix_len = strs[0].size();
+        for (int i = 1; i < strs.size() ; ++i) {
+            int j = 0;
+            for (; j < prefix_len && strs[i][j] == strs[0][j]; ++j);
+            prefix_len = j;// j指向相同的最后一个的下一个元素
+        }
+        return strs[0].substr(0, prefix_len);
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot
@@ -923,6 +989,80 @@ public:
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int romanToInt(string s) {
+        if (s.empty()) {
+            return 0;
+        }
+        unordered_map<char, int> mp { {'I', 1}, {'V', 5}, {'X', 10}, {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000} };
+        int sum = mp[s.back()];
+        for (int i = s.size() - 2; i >= 0; --i) {
+            sum += mp[s[i]] >= mp[s[i + 1]] ? mp[s[i]] : -mp[s[i]];
+        }
+        return sum;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    int romanToInt(string s) {
+        const string M[] = {"", "M", "MM", "MMM"};
+        const string C[] = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        const string X[] = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        const string I[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+        int res = 0, i = 0, state = 0;
+        string s1, s2, s3;
+        while(i < s.size()) {
+            switch(state) {
+            case 0:
+                if(s[i] == 'C' || s[i] == 'D') {
+                    state = 1;
+                } else if(s[i] == 'X' || s[i] == 'L') {
+                    state = 2;
+                } else if(s[i] == 'I' || s[i] == 'V') {
+                    state = 3;
+                } else {
+                    res += 1000;
+                    i++;
+                }
+                break;
+            case 1:
+                if(s[i] == 'X' || s[i] == 'L') {
+                    state = 2;
+                } else if(s[i] == 'I' || s[i] == 'V') {
+                    state = 3;
+                } else {
+                    s1 += s[i++];
+                }
+                break;
+            case 2:
+                if(s[i] == 'I' || s[i] == 'V') {
+                    state = 3;
+                } else {
+                    s2 += s[i++];
+                }
+                break;
+            case 3:
+                s3 = s.substr(i);
+                i = s.size();
+                break;
+            }
+        }
+        for (int i = 0; i < 10; ++i) {
+            res += (C[i] == s1 ? 100 * i : 0)
+                   + (X[i] == s2 ? 10 * i : 0)
+                   + (I[i] == s3 ? i : 0);
+        }
+        return res;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot

@@ -44,6 +44,71 @@ public:
 };
 \end{Code}
 
+\subsubsection{分析}
+
+Since in the ASCII, the difference between '(' and ')' is 1, the difference between '[' and ']' is 2 and the difference between '{' and '}' is also 2.
+
+这种解法对减一情况可能出错，如果不限制输入。
+
+\subsubsection{代码new}
+\begin{Code}
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> stk;
+        int i = 0;
+        while(i < s.length()) {
+            char ch = s[i];
+            if((ch == '(') || (ch == '[') || (ch == '{')) {
+                stk.push(ch);
+                i++;
+            } else if((stk.size() != 0)
+                      && ((stk.top() == ch - 1)
+                          || (stk.top() == ch - 2))) {
+                stk.pop();
+                i++;
+            } else {
+                return false;
+            }
+        }
+        return stk.empty();
+    }
+};
+\end{Code}
+
+\subsubsection{代码new}
+\begin{Code}
+class Solution {
+public:
+    bool isValid(string s) {
+        if (s.empty() || s.size() % 2 == 1) {
+            return false;
+        }
+        std::vector<int> v;
+        v.resize(128);
+        v['('] = 1;
+        v[')'] = -1;
+        v['{'] = 2;
+        v['}'] = -2;
+        v['['] = 3;
+        v[']'] = -3;
+        std::deque<int> q;
+        q.push_back(0);
+        for (int i = 0; i < s.size(); ++i) {
+            int x = v[s[i]];
+            if (x > 0) {
+                q.push_back(x);
+            } else {
+                if (q.back() != -x) {
+                    return false;
+                }
+                q.pop_back();
+            }
+        }
+        return q.back() == 0;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot
