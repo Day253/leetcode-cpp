@@ -754,22 +754,36 @@ public:
 \myenddot
 
 
-\subsection{Same Tree}
+\subsection{Same Tree (loj100)}
 \label{sec:same-tree}
-
 
 \subsubsection{描述}
 Given two binary trees, write a function to check if they are equal or not.
 
 Two binary trees are considered equal if they are structurally identical and the nodes have the same value.
 
-
 \subsubsection{分析}
 无
 
-
 \subsubsection{递归版}
 递归版
+\begin{Code}
+class Solution {
+public:
+    bool isSameTree(TreeNode *p, TreeNode *q) {
+        if(p == NULL && q == NULL)
+            return true;
+        if(p != NULL && q == NULL)
+            return false;
+        if(p == NULL && q != NULL)
+            return false;
+        if(p->val != q->val)
+            return false;
+        return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+    }
+};
+\end{Code}
+
 \begin{Code}
 // LeetCode, Same Tree
 // 递归版，时间复杂度O(n)，空间复杂度O(logn)
@@ -785,6 +799,42 @@ public:
 };
 \end{Code}
 
+\begin{Code}
+class Solution {
+public:
+    bool isSameTree(TreeNode *p, TreeNode *q) {
+        if(p == NULL || q == NULL)
+            return (p == q);
+        bool result = (p != NULL && q != NULL) && (p->val == q->val);
+        return result && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+    }
+};
+\end{Code}
+
+\begin{Code}
+class Solution {
+public:
+    bool isSameTree(TreeNode *p, TreeNode *q) {
+        if(p == NULL || q == NULL)
+            return (p == q);
+        return p->val == q->val && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
+    }
+};
+\end{Code}
+
+\subsubsection{递归版}
+Use syntactic sugar to combine stop condition and recursive call together.
+\begin{Code}
+class Solution {
+public:
+    bool isSameTree(TreeNode *p, TreeNode *q) {
+        return (p == NULL || q == NULL) ?
+               p == q : p->val == q->val
+               && isSameTree(p->left, q->left)
+               && isSameTree(p->right, q->right);
+    }
+};
+\end{Code}
 
 \subsubsection{迭代版}
 \begin{Code}
@@ -828,16 +878,77 @@ public:
 
 
 \subsubsection{描述}
-Given two binary trees, write a function to check if they are equal or not.
+Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
 
-Two binary trees are considered equal if they are structurally identical and the nodes have the same value.
+For example, this binary tree is symmetric:
 
+\begin{Code}
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+\end{Code}
+
+But the following is not:
+
+\begin{Code}
+    1
+   / \
+  2   2
+   \   \
+   3    3
+\end{Code}
+
+\textbf{Note:}
+
+Bonus points if you could solve it both recursively and iteratively.
+
+confused what \fn{"{1,#,2,3}"} means? > read more on how binary tree is serialized on OJ.
+
+\textbf{OJ's Binary Tree Serialization:}
+
+The serialization of a binary tree follows a level order traversal, where '#' signifies a path terminator where no node exists below.
+
+Here's an example:
+
+\begin{Code}
+   1
+  / \
+ 2   3
+    /
+   4
+    \
+     5
+\end{Code}
+
+The above binary tree is serialized as \fn{"{1,2,3,#,#,4,#,#,5}"}.
 
 \subsubsection{分析}
 无
 
 
 \subsubsection{递归版}
+\begin{Code}
+class Solution {
+public:
+    bool isSymmetric(TreeNode *root) {
+        if(!root)return true;
+        return isSame(root->left, root->right);
+    }
+private:
+    bool isSame(TreeNode *p, TreeNode *q) {
+        if(!p && !q)return true;
+        if(!p)return false;
+        if(!q)return false;
+        if(p->val != q->val)return false;
+        bool left_right = isSame(p->left, q->right);
+        bool right_left = isSame(p->right, q->left);
+        return left_right && right_left;
+    }
+};
+\end{Code}
+
 \begin{Code}
 // LeetCode, Symmetric Tree
 // 递归版，时间复杂度O(n)，空间复杂度O(logn)
@@ -890,6 +1001,37 @@ public:
 };
 \end{Code}
 
+\subsubsection{迭代版}
+\begin{Code}
+class Solution {
+public:
+    bool isSymmetric(TreeNode *root) {
+        TreeNode *left, *right;
+        if (!root)
+            return true;
+        queue<TreeNode *> q1, q2;
+        q1.push(root->left);
+        q2.push(root->right);
+        while (!q1.empty() && !q2.empty()) {
+            left = q1.front();
+            q1.pop();
+            right = q2.front();
+            q2.pop();
+            if (NULL == left && NULL == right)
+                continue;
+            if (NULL == left || NULL == right)
+                return false;
+            if (left->val != right->val)
+                return false;
+            q1.push(left->left);
+            q1.push(left->right);
+            q2.push(right->right);
+            q2.push(right->left);
+        }
+        return true;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot

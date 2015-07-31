@@ -201,14 +201,14 @@ If no valid conversion could be performed, a zero value is returned. If the corr
 \end{enumerate}
 
 To deal with overflow, inspect the current number before multiplication. If the current number is greater than 214748364, we know it is going to overflow. On the other hand, if the current number is equal to 214748364, we know that it will overflow only when the current digit is greater than or equal to 8.
-
 溢出判断方法：
-
-\fn{num > INT_MAX / 10 || (num == INT_MAX / 10 && (str[i] - '0') > INT_MAX % 10}
-
-或者 
-
-\fn{num > INT_MAX / 10 || num * 10 > INT_MAX - (str[i] - '0')}
+\begin{Code}
+num > INT_MAX / 10 || (num == INT_MAX / 10 && (str[i] - '0') > INT_MAX % 10
+\end{Code}
+或者
+\begin{Code}
+num > INT_MAX / 10 || num * 10 > INT_MAX - (str[i] - '0')
+\end{Code}
 
 \subsubsection{代码}
 \begin{Code}
@@ -235,8 +235,7 @@ public:
                 break;
             }
             if (num > INT_MAX / 10 ||
-                    (num == INT_MAX / 10 &&
-                     (str[i] - '0') > INT_MAX % 10)) {
+                    (num == INT_MAX / 10 && (str[i] - '0') > INT_MAX % 10)) {
                 return sign == -1 ? INT_MIN : INT_MAX;
             }
             num = num * 10 + str[i] - '0';

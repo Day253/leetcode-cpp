@@ -1,6 +1,6 @@
 \chapter{排序}
 
-\section{Merge Sorted Array} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Merge Sorted Array (loj88)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:merge-sorted-array}
 
 
@@ -33,6 +33,21 @@ public:
 };
 \end{Code}
 
+\subsubsection{分析}
+This code relies on the simple observation that once all of the numbers from \fn{nums2} have been merged into \fn{nums1}, the rest of the numbers in \fn{nums1} that were not moved are already in the correct place.
+
+\subsubsection{代码C++}
+\begin{Code}
+class Solution {
+public:
+    void merge(vector<int> &nums1, int m, vector<int> &nums2, int n) {
+        int i = m - 1, j = n - 1, tar = m + n - 1;
+        while (j >= 0) {
+            nums1[tar--] = i >= 0 && nums1[i] > nums2[j] ? nums1[i--] : nums2[j--];
+        }
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot
