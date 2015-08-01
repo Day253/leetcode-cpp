@@ -307,7 +307,26 @@ Return {\small \fontspec{Latin Modern Mono} "100"}.
 
 \subsubsection{分析}
 无
-
+\subsubsection{代码}
+\begin{Code}
+\\ 改动了string第一个值做缓存
+class Solution {
+public:
+    string addBinary(string a, string b) {
+        string add_result;
+        int i = a.length() - 1, j = b.length() - 1, carry = 0, odd = 0;
+        while(i >= 0 || j >= 0) {
+            if(i < 0) a[i = 0] = '0';
+            if(j < 0) b[j = 0] = '0';
+            odd = (((a[i] - '0') + (b[j] - '0')) + carry) % 2;
+            carry = (((a[i--] - '0') + (b[j--] - '0')) + carry) / 2;
+            add_result.insert(0, (odd) ? "1" : "0");
+        }
+        add_result.insert(0, (carry) ? "1" : "");
+        return add_result;
+    }
+};
+\end{Code}
 
 \subsubsection{代码}
 \begin{Code}
@@ -336,6 +355,33 @@ public:
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+\\ implementing a full adder 高级加法实现方式
+class Solution {
+public:
+    char *addBinary(char *a, char *b) {
+        int la = strlen(a);
+        int lb = strlen(b);
+        int lr = la > lb ? la : lb;
+        int carry = 0;
+        char *res = (char *)calloc(lr + 2, sizeof(char));
+        res[lr + 1] = '\0';
+        la--;
+        lb--;
+        while (la >= 0 || lb >= 0) {
+            int ba = la >= 0 ? a[la--] - '0' : 0;
+            int bb = lb >= 0 ? b[lb--] - '0' : 0;
+            int br = ba ^ bb ^ carry;
+            carry = (ba & bb) | (carry & (ba ^ bb));
+            res[lr--] = br + '0';
+        }
+        if (!carry) return res + 1;
+        res[0] = '1';
+        return res;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot

@@ -1,0 +1,46 @@
+\chapter{Shell}
+
+\section{Word Frequency (loj192)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\label{sec:word-frequency}
+
+
+\subsubsection{描述}
+Write a bash script to calculate the frequency of each word in a text file \fn{words.txt}.
+For simplicity sake, you may assume:
+\begindot
+\item \fn{words.txt} contains only lowercase characters and space \fn{' '} characters.
+\item Each word must consist of lowercase characters only.
+\item Words are separated by one or more whitespace characters.
+\myenddot
+For example, assume that \fn{words.txt} has the following content:
+\begin{Code}
+the day is sunny the the
+the sunny is is
+\end{Code}
+Your script should output the following, sorted by descending frequency:
+\begin{Code}
+the 4
+is 3
+sunny 2
+day 1
+\end{Code}
+
+\textbf{Note:}
+
+Don't worry about handling ties, it is guaranteed that each word's frequency count is unique.
+
+\textbf{Hint:}
+
+Could you write it in one-line using Unix pipes?
+
+\subsubsection{分析}
+无
+
+\subsubsection{代码}
+\begin{Code}
+# Read from the file words.txt and output the word frequency list to stdout.
+grep -oE '[a-z]+' words.txt | sort | uniq -c | sort -r | awk '{print $2" "$1}' 
+\end{Code}
+
+\subsubsection{相关题目}
+无
