@@ -12,11 +12,13 @@ For simplicity sake, you may assume:
 \item Each word must consist of lowercase characters only.
 \item Words are separated by one or more whitespace characters.
 \myenddot
+
 For example, assume that \fn{words.txt} has the following content:
 \begin{Code}
 the day is sunny the the
 the sunny is is
 \end{Code}
+
 Your script should output the following, sorted by descending frequency:
 \begin{Code}
 the 4
@@ -34,13 +36,111 @@ Don't worry about handling ties, it is guaranteed that each word's frequency cou
 Could you write it in one-line using Unix pipes?
 
 \subsubsection{分析}
-无
+one line with pipe:
+
+\textbf{tr -s}: truncate the string with target string, but only remaining one instance (e.g. multiple whitespaces)
+
+\textbf{sort}: To make the same string successive so that uniq could count the same string fully and correctly.
+
+\textbf{uniq -c}: uniq is used to filter out the repeated lines which are successive, -c means counting
+
+\textbf{sort -r}: -r means sorting in descending order
+
+\textbf{awk '{ print \$2, \$1 }'}: To format the output, see here. http://linux.cn/article-3945-1.html
 
 \subsubsection{代码}
 \begin{Code}
 # Read from the file words.txt and output the word frequency list to stdout.
 grep -oE '[a-z]+' words.txt | sort | uniq -c | sort -r | awk '{print $2" "$1}' 
 \end{Code}
+
+\subsubsection{分析}
+I should count the words. So I chose the \fn{awk} command.
+\begindot
+\item I use a dictionary in \fn{awk}. For every line I count every word in the dictionary.
+\item After deal with all lines. At the \fn{END}, use for \fn{(item in Dict) \{ \#do someting\# \}} to print every words and its frequency.
+\myenddot
+
+Now the printed words are unsorted. Then I use a \fn{|} pipes and sort it by \fn{sort}
+\begindot
+\item \fn{sort -n} means "compare according to string numerical value".
+\item \fn{sort -r} means "reverse the result of comparisons".
+\item \fn{sort -k 2} means "sort by the second word"
+\myenddot
+
+\subsubsection{代码}
+\begin{Code}
+awk '\
+{ for (i=1; i<=NF; i++) { ++D[$i]; } }\
+END { for (i in D) { print i, D[i] } }\
+' words.txt | sort -nr -k 2
+\end{Code}
+
+\subsubsection{分析}
+did it with sed
+
+It's a good idea to use \fn{tr} and \fn{uniq}. But I think better using \fn{awk '{ print \$1, \$2 }'} than {sed} and regular expression.
+
+\subsubsection{代码}
+\begin{Code}
+cat words.txt | tr -s '[[:space:]]' '\n'| sort | uniq -c | sort -r | \
+sed -r -e 's/[[:space:]]*([[:digit:]]+)[[:space:]]*([[:alpha:]]+)/\2 \1/g'
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+#!/usr/bin/env bash
+
+declare -A HashWord
+File="words.txt"
+
+function ReadTxtFile
+{
+    while read Line
+    do
+        Word=(${Line})
+        for Var in ${Word[@]}
+        do
+            HashWord+=( [${Var}]='1')
+            Word[${Var}]=
+            for i in ${Word[@]}
+            do
+                if [[ ${Var} == ${i} ]];then
+                    Value=${HashWord[${Var}]}
+                fi
+            done
+        done
+    done < ${File}
+
+    for Key in ${!HashWord[*]}
+    do
+        echo "${Key} ${#HashWord[${Key}]}"
+    done
+}
+
+### Main Logic
+
+ReadTxtFile
+\end{Code}
+
+\subsubsection{分析}
+accepted answer using tr, sort, uniq and awk
+
+\subsubsection{代码}
+\begin{Code}
+tr -s ' ' '\n' < words.txt|sort|uniq -c|sort -nr|awk '{print $2, $1}'
+\end{Code}
+
+\subsubsection{分析}
+1 line solution using awk, sort and pipe
+
+First, use awk to count the number for each word. Then sort to sort the result by decreasing order.
+
+\subsubsection{代码}
+\begin{Code}
+awk '{for(i=1;i<=NF;i++) a[$i]++} END {for(k in a) print k,a[k]}' words.txt | sort -k2 -nr
+\end{Code}
+
 
 \subsubsection{相关题目}
 无
