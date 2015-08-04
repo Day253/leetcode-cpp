@@ -1488,6 +1488,199 @@ public:
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+private:
+    TreeNode *buildTreeEx(  vector<int>::iterator preorderBegin,
+                            vector<int>::iterator preorderEnd,
+                            vector<int>::iterator inorderBegin,
+                            vector<int>::iterator inorderEnd ) {
+        if (preorderBegin == preorderEnd) {
+            return NULL;
+        }
+        TreeNode *root = new TreeNode(*preorderBegin);
+        preorderBegin++;
+        auto rootNode = ::find(inorderBegin, inorderEnd, root->val);
+        int leftSize = ::distance(inorderBegin, rootNode);
+        root->left = buildTreeEx(preorderBegin, preorderBegin + leftSize,
+                                 inorderBegin, rootNode);
+        root->right = buildTreeEx(preorderBegin + leftSize, preorderEnd,
+                                  rootNode + 1, inorderEnd);
+        return root;
+    }
+public:
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+        if (preorder.size() < 1) {
+            return NULL;
+        }
+        return buildTreeEx(preorder.begin(), preorder.end(),
+                           inorder.begin(), inorder.end());
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+The idea is as follows:
+
+1) Keep pushing the nodes from the preorder into a stack (and keep making the tree by adding nodes to the left of the previous node) until the top of the stack matches the inorder.
+
+2) At this point, pop the top of the stack until the top does not equal inorder (keep a flag to note that you have made a pop).
+
+3) Repeat 1 and 2 until preorder is empty. The key point is that whenever the flag is set, insert a node to the right and reset the flag.
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+        if(preorder.size() == 0)
+            return NULL;
+        stack<int> s;
+        stack<TreeNode *> st;
+        TreeNode *t, *r, *root;
+        int i, j, f;
+        f = i = j = 0;
+        s.push(preorder[i]);
+        root = new TreeNode(preorder[i]);
+        st.push(root);
+        t = root;
+        i++;
+        while(i < preorder.size()) {
+            if(!st.empty() && st.top()->val == inorder[j]) {
+                t = st.top();
+                st.pop();
+                s.pop();
+                f = 1;
+                j++;
+            } else {
+                if(f == 0) {
+                    s.push(preorder[i]);
+                    t -> left = new TreeNode(preorder[i]);
+                    t = t -> left;
+                    st.push(t);
+                    i++;
+                } else {
+                    f = 0;
+                    s.push(preorder[i]);
+                    t -> right = new TreeNode(preorder[i]);
+                    t = t -> right;
+                    st.push(t);
+                    i++;
+                }
+            }
+        }
+        return root;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    TreeNode *buildTree(vector<int> &pre, vector<int> &in) {
+        int i=0,j=0;
+        TreeNode *root=new TreeNode(0x80000000);
+        TreeNode *pp=NULL,*ptr=root;
+        stack<TreeNode*> sn;sn.push(root);
+        while (j<in.size()) {
+            if (sn.top()->val==in[j]) {
+                pp=sn.top();
+                sn.pop();
+                j++;
+            } else if (pp) {
+                ptr=new TreeNode(pre[i]);
+                pp->right=ptr;pp=NULL;
+                sn.push(ptr);
+                i++;
+            } else {
+                ptr=new TreeNode(pre[i]);
+                sn.top()->left=ptr;
+                sn.push(ptr);
+                i++;
+            }
+        }
+        ptr=root->left;delete root;
+        return ptr;
+    }
+}; 
+\end{Code}
+
+Similiar idea in cpp.
+
+ppre and pin are pointers to current item.
+
+Unlike post and in case, we need to construct tree \textbf{from head to the tail} of these two orders.
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+        if (preorder.size() == 0) return NULL;
+        int ppre = 0, pin = 0;
+        TreeNode *root = new TreeNode(preorder.at(ppre++));
+        TreeNode *p = NULL;
+        stack<TreeNode *> roots;
+        roots.push(root);
+        while (true) {
+            if (inorder.at(pin) == roots.top()->val) {
+                p = roots.top();
+                roots.pop();
+                pin++;
+                if (pin == inorder.size()) break;
+                if (roots.size() && inorder.at(pin) == roots.top()->val) continue;
+                p->right = new TreeNode(preorder.at(ppre));
+                ppre++;
+                roots.push(p->right);
+            } else {
+                p = new TreeNode(preorder.at(ppre));
+                ppre++;
+                roots.top()->left = p;
+                roots.push(p);
+            }
+        }
+        return root;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
+        TreeNode *root = NULL;
+        int size = preorder.size();
+        if(size <= 0) return root;
+        root = new TreeNode(preorder[0]);
+        if(size == 1) return root;
+        stack<TreeNode *> s;
+        s.push(root);
+        TreeNode *node;
+        int i = 0, j = 0;
+        while(i + 1 < size) {
+            node = s.top();
+            if( node->val != inorder[j]) {
+                node->left = new TreeNode(preorder[++i]);
+                node = node->left;
+                s.push(node);
+            } else {
+                s.pop();
+                j++;
+                if(s.empty() || inorder[j] != s.top()->val) {
+                    node->right = new TreeNode(preorder[++i]);
+                    node = node->right;
+                    s.push(node);
+                }
+            }//if
+        }//while
+        return root;
+    }
+};
+\end{Code}
+
 
 \subsubsection{相关题目}
 \begindot
