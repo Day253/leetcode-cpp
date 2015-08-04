@@ -1,7 +1,7 @@
 \chapter{字符串}
 
 
-\section{Valid Palindrome} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Valid Palindrome (loj125)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:valid-palindrome}
 
 
@@ -19,7 +19,7 @@ For the purpose of this problem, we define empty string as valid palindrome.
 
 
 \subsubsection{分析}
-无
+The idea is simple, have two pointers – one at the head while the other one at the tail. Move them towards each other until they meet while skipping non-alphanumeric> characters.
 
 
 \subsubsection{代码}
@@ -42,6 +42,24 @@ public:
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+class Solution {
+public:
+    bool isPalindrome(string s) {
+        // Move 2 pointers from each end until they collide
+        for (int i = 0, j = s.size() - 1; i < j; i++, j--) {
+            // Increment left pointer if not alphanumeric
+            while (isalnum(s[i]) == false && i < j) i++;
+            // Decrement right pointer if no alphanumeric
+            while (isalnum(s[j]) == false && i < j) j--;
+            // Exit and return error if not match
+            if (toupper(s[i]) != toupper(s[j])) return false;
+        }
+        return true;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot

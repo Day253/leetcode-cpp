@@ -730,7 +730,7 @@ public:
 \myenddot
 
 
-\section{Pascal's Triangle II} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pascal's Triangle II (loj119)} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \label{sec:pascals-triangle-ii}
 
 
@@ -747,9 +747,9 @@ Note: Could you optimize your algorithm to use only $O(k)$ extra space?
 \subsubsection{分析}
 滚动数组。
 
+从前往后遍历使用v[j] = v[j-1] + v[j]改为v[j] = v[j] + v[j+1]可以避免覆盖，但是要整体移动数组，因此从后往前计算，不但可以避免覆盖还不需要移动数组。
 
 \subsubsection{代码}
-
 \begin{Code}
 // LeetCode, Pascal's Triangle II
 // 滚动数组，时间复杂度O(n^2)，空间复杂度O(n)
@@ -768,6 +768,40 @@ public:
 };
 \end{Code}
 
+\subsubsection{代码}
+\begin{Code}
+// 利用vector初始化就是0，未被计算的地方就是0可以直接加，上一种解法必须手动加入1。
+class Solution {
+public:
+    vector<int> getRow(int rowIndex) {
+        vector<int> vi(rowIndex + 1);
+        vi[0] = 1;
+        for (int i = 0; i <= rowIndex ; ++i) {
+            for (int j = i; j > 0; --j) {
+                vi[j] = vi[j] + vi[j - 1];
+            }
+        }
+        return vi;
+    }
+};
+\end{Code}
+
+\subsubsection{代码}
+\begin{Code}
+// A little little improvement in C++ version, make the best use of vector's fill constructor:
+class Solution {
+public:
+    vector<int> getRow(int rowIndex) {
+        vector<int> ints(rowIndex + 1, 1);
+        for(int row = 0; row < rowIndex; row++) {
+            for(int col = row; col > 0; col--) {
+                ints[col] += ints[col - 1];
+            }
+        }
+        return ints;
+    }
+};
+\end{Code}
 
 \subsubsection{相关题目}
 \begindot
