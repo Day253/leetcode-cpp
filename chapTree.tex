@@ -1167,7 +1167,7 @@ For this problem, a height-balanced binary tree is defined as a binary tree in w
 \subsubsection{分析}
 This problem is generally believed to have two solutions: \textbf{the top down approach} and \textbf{the bottom up way}.
 
-1.The first method checks whether the tree is balanced strictly according to the definition of balanced binary tree: the difference between the heights of the two sub trees are not bigger than 1, and both the left sub tree and right sub tree are also balanced. With the helper function depth(), we could easily write the code;
+The first method checks whether the tree is balanced strictly according to the definition of balanced binary tree: the difference between the heights of the two sub trees are not bigger than 1, and both the left sub tree and right sub tree are also balanced. With the helper function depth(), we could easily write the code;
 
 \subsubsection{代码}
 \begin{Code}
@@ -1188,9 +1188,9 @@ public:
 };
 \end{Code}
 
-For the current node root, calling depth() for its left and right children actually has to access all of its children, thus the complexity is O(N). We do this for each node in the tree, so the overall complexity of isBalanced will be O(N^2). This is a top down approach.
+This is a top down approach. For the current node root, calling depth() for its left and right children actually has to access all of its children, thus the complexity is O(N). We do this for each node in the tree, so the overall complexity of isBalanced will be O(N^2). 
 
-2.The second method is based on \textbf{DFS}. Instead of calling depth() explicitly for each child node, we return the height of the current node in DFS recursion. When the sub tree of the current node (inclusive) is balanced, the function dfsHeight() returns a non-negative value as the height. Otherwise -1 is returned. According to the leftHeight and rightHeight of the two children, the parent node could check if the sub tree is balanced, and decides its return value.
+The second method is based on \textbf{DFS}. Instead of calling depth() explicitly for each child node, we return the height of the current node in DFS recursion. When the sub tree of the current node (inclusive) is balanced, the function dfsHeight() returns a non-negative value as the height. Otherwise -1 is returned. According to the leftHeight and rightHeight of the two children, the parent node could check if the sub tree is balanced, and decides its return value.
 
 \subsubsection{代码}
 \begin{Code}
@@ -1908,7 +1908,7 @@ private:
 二叉树的先序、中序、后序遍历都可以看做是DFS，此外还有其他顺序的深度优先遍历，共有$3!=6$种。其他3种顺序是 \fn{root->r->l，r->root->l, r->l->root}。
 
 
-\subsection{Minimum Depth of Binary Tree}
+\subsection{Minimum Depth of Binary Tree (loj111)}
 \label{sec:minimum-depth-of-binary-tree}
 
 
@@ -1934,13 +1934,24 @@ public:
 private:
     static int minDepth(const TreeNode *root, bool hasbrother) {
         if (!root) return hasbrother ? INT_MAX : 0;
-
         return 1 + min(minDepth(root->left, root->right != NULL),
-                minDepth(root->right, root->left != NULL));
+                       minDepth(root->right, root->left != NULL));
     }
 };
 \end{Code}
 
+\subsubsection{递归版}
+\begin{Code}
+class Solution {
+public:
+    int minDepth(TreeNode *root) {
+        if(!root) return 0;
+        if(!root->left) return 1 + minDepth(root->right);
+        if(!root->right) return 1 + minDepth(root->left);
+        return 1 + min(minDepth(root->left), minDepth(root->right));
+    }
+};
+\end{Code}
 
 \subsubsection{迭代版}
 \begin{Code}
@@ -1973,6 +1984,39 @@ public:
         }
 
         return result;
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+I use a FIFO queue to realize the BFS method and the int is used for storing the current depth. This problem is not suitable for DFS or recursion, which may waste much time.
+
+\subsubsection{迭代版}
+\begin{Code}
+class Solution {
+public:
+    int minDepth(TreeNode *root) {
+        queue<pair<TreeNode *, int>> nodes;
+        int depth = 0;
+        if(root == NULL) {
+            return 0;
+        }
+        nodes.push(pair<TreeNode *, int>(root, 1));
+        while(!nodes.empty()) {
+            pair<TreeNode *, int> next = nodes.front();
+            nodes.pop();
+            if(next.first->left == NULL && next.first->right == NULL) {
+                depth = next.second;
+                break;
+            }
+            if(next.first->left != NULL) {
+                nodes.push(pair<TreeNode *, int>(next.first->left, next.second + 1));
+            }
+            if(next.first->right != NULL) {
+                nodes.push(pair<TreeNode *, int>(next.first->right, next.second + 1));
+            }
+        }
+        return depth;
     }
 };
 \end{Code}
