@@ -7,10 +7,29 @@ struct TreeNode {
     int val;
     TreeNode *left;
     TreeNode *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) { }
+    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 \end{Code}
 
+confused what \fn{"{1,#,2,3}"} means? > read more on how binary tree is serialized on OJ.
+
+\textbf{OJ's Binary Tree Serialization:}
+
+The serialization of a binary tree follows a level order traversal, where '#' signifies a path terminator where no node exists below.
+
+Here's an example:
+
+\begin{Code}
+   1
+  / \
+ 2   3
+    /
+   4
+    \
+     5
+\end{Code}
+
+The above binary tree is serialized as \fn{"{1,2,3,#,#,4,#,#,5}"}.
 
 \section{二叉树的遍历} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -374,7 +393,7 @@ private:
 \myenddot
 
 
-\subsection{Binary Tree Level Order Traversal}
+\subsection{Binary Tree Level Order Traversal (loj102)}
 \label{sec:binary-tree-tevel-order-traversal}
 
 
@@ -429,6 +448,28 @@ public:
 };
 \end{Code}
 
+\begin{Code}
+class Solution {
+public:
+    vector<vector<int>> ret;
+
+    void buildVector(TreeNode *root, int depth) {
+        if(root == NULL) return;
+        // 注意这行
+        if(ret.size() == depth)
+            ret.push_back(vector<int>());
+        ret[depth].push_back(root->val);
+        buildVector(root->left, depth + 1);
+        buildVector(root->right, depth + 1);
+    }
+
+    vector<vector<int> > levelOrder(TreeNode *root) {
+        buildVector(root, 0);
+        return ret;
+    }
+};
+\end{Code}
+
 
 \subsubsection{迭代版}
 \begin{Code}
@@ -445,6 +486,8 @@ public:
 
         current.push(root);
         while (!current.empty()) {
+            // 此处使用两个队列 因为一个队列是当前层，另一个是下一层
+            // 使用一个是不对的
             while (!current.empty()) {
                 TreeNode* node = current.front();
                 current.pop();
@@ -461,6 +504,34 @@ public:
 };
 \end{Code}
 
+\subsubsection{迭代版}
+\begin{Code}
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode *root) {
+        vector<vector<int>> result;
+        if(!root) return result;
+        queue<TreeNode *> q;
+        q.push(root);
+        vector<int> level;
+        while (!q.empty()) {
+            // 只使用一个队列，但是多加一个计数器
+            int count = q.size();
+            while (count--) {
+                TreeNode *node = q.front();
+                level.push_back(node->val);
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+                q.pop();
+            }
+            result.push_back(level);
+            level.clear();
+        }
+        return result;
+    }
+};
+\end{Code}
+
 
 \subsubsection{相关题目}
 \begindot
@@ -469,7 +540,7 @@ public:
 \myenddot
 
 
-\subsection{Binary Tree Level Order Traversal II}
+\subsection{Binary Tree Level Order Traversal II (loj107)}
 \label{sec:binary-tree-tevel-order-traversal-ii}
 
 
@@ -553,6 +624,66 @@ public:
             swap(next, current);
         }
         reverse(result.begin(), result.end()); // 比上一题多此一行
+        return result;
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+不使用reverse的递归版本
+
+The way I see this problem is that it is EXACTLY the same as "Level-Order Traversal I" except that we need to reverse the final container for output, which is trivial. Is there a better idea that fits this problem specifically?
+
+The attached is my current recursive solution. In each function call, we pass in the current node and its level. If this level does not yet exist in the output container, then we should add a new empty level. Then, we add the current node to the end of the current level, and recursively call the function passing the two children of the current node at the next level. This algorithm is really a DFS, but it saves the level information for each node and produces the same result as BFS would.
+
+\textbf{Comment：}
+
+Your regular method is THE BEST, complexity of taking the reverse of a vector is ONLY half the length of the vector (calculating the depth at the beginning will cost more, non-recursive way won't save you too much time). Regular solution is simple, neat and efficient.
+
+\subsubsection{不使用Reverse的递归版}
+\begin{Code}
+// 不使用reverse的递归版本
+class Solution {
+public:
+    vector<vector<int> > res;
+
+    void DFS(TreeNode *root, int level) {
+        if (root == NULL) return;
+        if (level == res.size()) { // The level does not exist in output
+            res.push_back(vector<int>()); // Create a new level
+        }
+        res[level].push_back(root->val); // Add the current value to its level
+        DFS(root->left, level + 1); // Go to the next level
+        DFS(root->right, level + 1);
+    }
+
+    vector<vector<int> > levelOrderBottom(TreeNode *root) {
+        DFS(root, 0);
+        return vector<vector<int> > (res.rbegin(), res.rend());
+    }
+};
+\end{Code}
+
+\subsubsection{分析}
+
+The following code without reversing too slow (60 ms) because insert operation on vector that too at beginning will be too costly. I wonder if there's any other way that doesn't involve reversing or inserting at front.
+
+\begin{Code}
+class Solution {
+public:
+    void levelOrderBottomRecur(TreeNode *root, int level,
+                               vector<vector<int> > &result) {
+        if(root == NULL)
+            return;
+        if(level >= result.size())
+            result.insert(result.begin(), vector<int>());
+        result[result.size() - level - 1].push_back(root->val);
+        levelOrderBottomRecur(root->left, level + 1, result);
+        levelOrderBottomRecur(root->right, level + 1, result);
+    }
+    vector<vector<int>> levelOrderBottom(TreeNode *root) {
+        vector<vector<int> > result;
+        levelOrderBottomRecur(root, 0, result);
         return result;
     }
 };
@@ -908,26 +1039,6 @@ But the following is not:
 
 Bonus points if you could solve it both recursively and iteratively.
 
-confused what \fn{"{1,#,2,3}"} means? > read more on how binary tree is serialized on OJ.
-
-\textbf{OJ's Binary Tree Serialization:}
-
-The serialization of a binary tree follows a level order traversal, where '#' signifies a path terminator where no node exists below.
-
-Here's an example:
-
-\begin{Code}
-   1
-  / \
- 2   3
-    /
-   4
-    \
-     5
-\end{Code}
-
-The above binary tree is serialized as \fn{"{1,2,3,#,#,4,#,#,5}"}.
-
 \subsubsection{分析}
 无
 
@@ -1043,7 +1154,7 @@ public:
 \myenddot
 
 
-\subsection{Balanced Binary Tree}
+\subsection{Balanced Binary Tree (loj110)}
 \label{sec:balanced-binary-tree}
 
 
@@ -1054,36 +1165,52 @@ For this problem, a height-balanced binary tree is defined as a binary tree in w
 
 
 \subsubsection{分析}
-无
+This problem is generally believed to have two solutions: \textbf{the top down approach} and \textbf{the bottom up way}.
 
+1.The first method checks whether the tree is balanced strictly according to the definition of balanced binary tree: the difference between the heights of the two sub trees are not bigger than 1, and both the left sub tree and right sub tree are also balanced. With the helper function depth(), we could easily write the code;
 
 \subsubsection{代码}
 \begin{Code}
-// LeetCode, Balanced Binary Tree
-// 时间复杂度O(n)，空间复杂度O(logn)
-class Solution {
+class solution {
 public:
-    bool isBalanced (TreeNode* root) {
-        return balancedHeight (root) >= 0;
+    int depth (TreeNode *root) {
+        if (root == NULL) return 0;
+        return max (depth(root -> left), depth (root -> right)) + 1;
     }
 
-    /**
-     * Returns the height of `root` if `root` is a balanced tree,
-     * otherwise, returns `-1`.
-     */
-    int balancedHeight (TreeNode* root) {
-        if (root == nullptr) return 0;  // 终止条件
-
-        int left = balancedHeight (root->left);
-        int right = balancedHeight (root->right);
-
-        if (left < 0 || right < 0 || abs(left - right) > 1) return -1;  // 剪枝
-
-        return max(left, right) + 1; // 三方合并
+    bool isBalanced (TreeNode *root) {
+        if (root == NULL) return true;
+        int left = depth(root->left);
+        int right = depth(root->right);
+        return abs(left - right) <= 1 && isBalanced(root->left) && isBalanced(root->right);
     }
 };
 \end{Code}
 
+For the current node root, calling depth() for its left and right children actually has to access all of its children, thus the complexity is O(N). We do this for each node in the tree, so the overall complexity of isBalanced will be \textbf{O(N^2)}. This is a top down approach.
+
+2.The second method is based on \textbf{DFS}. Instead of calling depth() explicitly for each child node, we return the height of the current node in DFS recursion. When the sub tree of the current node (inclusive) is balanced, the function dfsHeight() returns a non-negative value as the height. Otherwise -1 is returned. According to the leftHeight and rightHeight of the two children, the parent node could check if the sub tree is balanced, and decides its return value.
+
+\subsubsection{代码}
+\begin{Code}
+class solution {
+public:
+    int dfsHeight (TreeNode *root) {
+        if (root == NULL) return 0;
+        int leftHeight = dfsHeight (root -> left);
+        if (leftHeight == -1) return -1;
+        int rightHeight = dfsHeight (root -> right);
+        if (rightHeight == -1) return -1;
+        if (abs(leftHeight - rightHeight) > 1)  return -1;
+        return max (leftHeight, rightHeight) + 1;
+    }
+    bool isBalanced(TreeNode *root) {
+        return dfsHeight (root) != -1;
+    }
+};
+\end{Code}
+
+In this bottom up approach, each node in the tree only need to be accessed once. Thus the time complexity is \textbf{O(N)}, better than the first solution.
 
 \subsubsection{相关题目}
 \begindot
